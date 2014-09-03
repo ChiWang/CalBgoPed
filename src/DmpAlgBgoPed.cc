@@ -1,27 +1,27 @@
 /*
- *  $Id: DmpAlgBgoPed.cc, 2014-08-31 23:24:56 DAMPE $
+ *  $Id: DmpAlgBgoPed.cc, 2014-09-01 14:52:22 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 19/07/2014
 */
 
 #include <stdio.h>
 
-#include "TClonesArray.h"
 #include "TH1F.h"
 
-#include "DmpEvtRdcHeader.h"
-#include "DmpEvtRdcBgoBar.h"
-#include "DmpDataBgoBarPed.h"
+#include "DmpEvtHeader.h"
+#include "DmpEvtBgoRaw.h"
+#include "DmpEvtBgoPed.h"
 #include "DmpAlgBgoPed.h"
 #include "DmpDataBuffer.h"
-#include "DmpDetectorBgo.h"
+#include "DmpParameterBgo.h"
+#include "DmpBgoBase.h"
 
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
  :DmpVAlg("Cal/Bgo/Ped"),
-  fRawDataEvtHeader(0),
-  fRawDataBgo(0),
-  fCalDataBgo(0)
+  fEvtHeader(0),
+  fBgoRaw(0),
+  fBgoPed(0)
 {
 }
 
@@ -32,77 +32,59 @@ DmpAlgBgoPed::~DmpAlgBgoPed(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Initialize(){
   // read input data
-  /*
-  fRawDataEvtHeader = dynamic_cast<DmpEvtRdcHeader*>(gDataBuffer->ReadObject("Event/Rdc/EventHeader"));
-  if(0 == fRawDataEvtHeader){
+  fEvtHeader = dynamic_cast<DmpEvtHeader*>(gDataBuffer->ReadObject("Event/Rdc/EventHeader"));
+  if(0 == fEvtHeader){
     DmpLogError<<"[DmpAlgBgoPed::Initialize] didn't find data \'Event/Rdc/EventHeader\'"<<DmpLogEndl;
-    fIniStatus = false;
-    return fIniStatus;
+    return false;
   }
-  */
-  fRawDataBgo = dynamic_cast<TClonesArray*>(gDataBuffer->ReadObject("Event/Rdc/Bgo"));
-  if(0 == fRawDataBgo){
+  fBgoRaw = dynamic_cast<DmpEvtBgoRaw*>(gDataBuffer->ReadObject("Event/Rdc/Bgo"));
+  if(0 == fBgoRaw){
     DmpLogError<<"[DmpAlgBgoPed::Initialize] didn't find data \'Event/Rdc/Bgo\'"<<DmpLogEndl;
-    fIniStatus = false;
-    return fIniStatus;
+    return false;
   }
   // create output data holder
-  fCalDataBgo = new TClonesArray("DmpDataBgoBarPed",300);
-  if(not gDataBuffer->RegisterObject("Calibration/Bgo/Pedestal",fCalDataBgo)){
-    fIniStatus = false;
-    return fIniStatus;
+  fBgoPed = new DmpEvtBgoPed();
+  if(not gDataBuffer->RegisterObject("Calibration/Bgo/Pedestal",fBgoPed,"DmpEvtBgoPed")){
+    return false;
   }
   // create Hist map
-  for(short l=0;l<DmpDetector::Bgo::kPlaneNo*2;++l){
-    for(short b=0;b<(DmpDetector::Bgo::kBarNo+DmpDetector::Bgo::kRefBarNo);++b){
-      Dmp1DMapTH1F aPedMapBar;
-      fPedHist.insert(std::make_pair(l*100+b,aPedMapBar));
-      for(short s=0;s<DmpDetector::Bgo::kSideNo;++s){
-        for(short d=0;d<DmpDetector::Bgo::kDyNo;++d){
+  short layerNo = DmpParameterBgo::kPlaneNo*2;
+  short barNo = DmpParameterBgo::kBarNo+DmpParameterBgo::kRefBarNo;
+  for(short l=0;l<layerNo;++l){
+    for(short b=0;b<barNo;++b){
+      for(short s=0;s<DmpParameterBgo::kSideNo;++s){
+        for(short d=0;d<DmpParameterBgo::kDyNo;++d){
           char name[50];
-          snprintf(name,50,"BgoPed_Bar%04d_Dy%02d",l*100+b,s*10+d*3+2);
-          fPedHist[l*100+b].insert(std::make_pair(s*10+d*3+2,new TH1F(name,name,1000,-500,1500)));
+          snprintf(name,50,"BgoPed_L%2d_B%02d_Dy%02d",l,b,s*10+d*3+2);
+          fPedHist.insert(std::make_pair(DmpBgoBase::ConstructGlobalDynodeID(l,b,s,d*3+2),new TH1F(name,name,1000,-500,1500)));
         }
       }
     }
-  }
-  return fIniStatus;
-}
-
-//-------------------------------------------------------------------
-bool DmpAlgBgoPed::ProcessThisEvent(){
-  DmpEvtRdcBgoBar  *aBar=0;
-  short nBars = fRawDataBgo->GetEntriesFast();
-  for(short barID=0;barID<nBars;++barID){
-    aBar = dynamic_cast<DmpEvtRdcBgoBar*>(fRawDataBgo->At(barID));
-    short globalBarID = aBar->GetGlobalBarID();
-    std::vector<short> dynodeID = aBar->GetDynodeID();
-    std::cout<<"\nglobalBarID = "<<globalBarID;
-    for(short i=0;i<dynodeID.size();++i){
-      std::cout<<"\ti = "<<dynodeID[i]<<" v = "<<aBar->GetSignal(dynodeID[i]);
-      fPedHist[globalBarID][dynodeID[i]]->Fill(aBar->GetSignal(dynodeID[i]));
-    }
-    std::cout<<std::endl;
   }
   return true;
 }
 
 //-------------------------------------------------------------------
-#include <TFile.h>
+bool DmpAlgBgoPed::ProcessThisEvent(){
+  short nSignal = fBgoRaw->GetSignalSize();
+  short gid = 0,adc = -999;
+  for(short i=0;i<nSignal;++i){
+    if(fBgoRaw->GetSignal(i,gid,adc)){
+      fPedHist[gid]->Fill(adc);
+    }
+  }
+  return true;
+}
+
+//-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
-  fCalDataBgo->Delete();
-  TFile *histRootFile = new TFile(fHistRootFileName,"recreate");
-  for(Dmp2DMapTH1F::iterator aBarMap=fPedHist.begin();aBarMap!=fPedHist.end();++aBarMap){
-    short globalBarID = aBarMap->first;
-    for(Dmp1DMapTH1F::iterator it=aBarMap->second.begin();it!=aBarMap->second.end();++it){
-      fPedHist[globalBarID][it->first]->Write();
+  for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
+      aHist->second->Write();
 // *
 // *  TODO: fit and save output data 
 // *
-      delete fPedHist[globalBarID][it->first];
-    }
+      delete aHist->second;
   }
-  delete histRootFile;
   return true;
 }
 

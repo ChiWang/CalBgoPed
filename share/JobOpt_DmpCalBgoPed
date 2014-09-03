@@ -1,11 +1,8 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_DmpCalBgoPed, 2014-07-27 21:23:24 DAMPE $
+ *  $Id: JobOpt_DmpCalBgoPed, 2014-09-03 11:23:29 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
- *-----------------------------------------------------
- *  Example of how to run Calibration of Bgo of DAMPE
- *-----------------------------------------------------
 '''
 
 #-------------------------------------------------------------------
@@ -14,7 +11,7 @@ import libDmpAlgCalBgoPed as DmpBgoCal
 
 #-------------------------------------------------------------------
 # Global setting
-DMPSW.Core.Set("EventNumber","100")     # If NOT set, will use 1234567890
+DMPSW.Core.Set("EventNumber","10")     # If NOT set, will use 1234567890
 #DMPSW.Core.Set("StartTime","20130101-0000")     # if NOT set, start from launch time
 #DMPSW.Core.Set("StopTime","20160101-0000")      # if NOT set, end at 2113.01.01
 #DMPSW.Core.Set("LogLevel","Debug")      # Value = {Error | Warning | Info | Debug}. If NOT set, will use Info.
@@ -27,7 +24,7 @@ DMPSW.RootIOSvc.Set("OutData/WriteList","Calibration/Bgo/Pedestal")  # split by 
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
-calBgoPed = DmpBgoCal.DmpAlgCalBgoPed()
+calBgoPed = DmpBgoCal.DmpAlgBgoPed()
 DMPSW.AlgMgr.Append(calBgoPed)
 
 #-------------------------------------------------------------------

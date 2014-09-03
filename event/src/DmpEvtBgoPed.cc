@@ -10,7 +10,8 @@
 ClassImp(DmpEvtBgoPed)
 
 //-------------------------------------------------------------------
-DmpEvtBgoPed::DmpEvtBgoPed():Reset(){
+DmpEvtBgoPed::DmpEvtBgoPed(){
+  Reset();
 }
 
 //-------------------------------------------------------------------
@@ -22,7 +23,7 @@ DmpEvtBgoPed::DmpEvtBgoPed(const DmpEvtBgoPed &r){
   short n = GlobalDynodeID.size();
   for(size_t i = 0;i<n;++i){
     GlobalDynodeID.push_back(r.GlobalDynodeID[i]);
-    Mean.push_back(r.Meanp[i]);
+    Mean.push_back(r.Mean[i]);
     Sigma.push_back(r.Sigma[i]);
   }
 }
@@ -36,7 +37,7 @@ DmpEvtBgoPed::DmpEvtBgoPed(const DmpEvtBgoPed *&r){
   short n = GlobalDynodeID.size();
   for(size_t i = 0;i<n;++i){
     GlobalDynodeID.push_back(r->GlobalDynodeID[i]);
-    Mean.push_back(r->Meanp[i]);
+    Mean.push_back(r->Mean[i]);
     Sigma.push_back(r->Sigma[i]);
   }
 }

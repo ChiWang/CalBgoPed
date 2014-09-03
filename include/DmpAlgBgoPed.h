@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpAlgBgoPed.h, 2014-08-31 23:36:51 DAMPE $
+ *  $Id: DmpAlgBgoPed.h, 2014-09-03 10:54:21 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 19/07/2014
 */
@@ -23,8 +23,7 @@ public:
   DmpAlgBgoPed();
   ~DmpAlgBgoPed();
 
-  void Set(const std::string &type,const std::string &value);
-  // if you need to set some options for your algorithm at run time. Overload Set()
+  //void Set(const std::string &type,const std::string &value);
   bool Initialize();
   bool ProcessThisEvent();
   bool Finalize();
