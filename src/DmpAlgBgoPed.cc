@@ -32,14 +32,12 @@ DmpAlgBgoPed::~DmpAlgBgoPed(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Initialize(){
   // read input data
-  fEvtHeader = dynamic_cast<DmpEvtHeader*>(gDataBuffer->ReadObject("Event/Rdc/EventHeader"));
-  if(0 == fEvtHeader){
-    DmpLogError<<"[DmpAlgBgoPed::Initialize] didn't find data \'Event/Rdc/EventHeader\'"<<DmpLogEndl;
+  fEvtHeader = new DmpEvtHeader();
+  if(not gDataBuffer->ReadObject("Event/Rdc/EventHeader",fEvtHeader)){
     return false;
   }
-  fBgoRaw = dynamic_cast<DmpEvtBgoRaw*>(gDataBuffer->ReadObject("Event/Rdc/Bgo"));
-  if(0 == fBgoRaw){
-    DmpLogError<<"[DmpAlgBgoPed::Initialize] didn't find data \'Event/Rdc/Bgo\'"<<DmpLogEndl;
+  fBgoRaw = new DmpEvtBgoRaw();
+  if(not gDataBuffer->ReadObject("Event/Rdc/Bgo",fBgoRaw)){
     return false;
   }
   // create output data holder
@@ -71,6 +69,7 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
   for(short i=0;i<nSignal;++i){
     if(fBgoRaw->GetSignal(i,gid,adc)){
       fPedHist[gid]->Fill(adc);
+      //std::cout<<"\tgid = "<<gid<<"\t v = "<<adc<<std::endl;
     }
   }
   return true;
