@@ -15,6 +15,7 @@
 #include "DmpDataBuffer.h"
 #include "DmpParameterBgo.h"
 #include "DmpBgoBase.h"
+#include "TF1.h"
 
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
@@ -79,12 +80,23 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
+  TF1 *gausFit = new TF1("GausFit","gaus",-500,1500);
   fBgoPed->StopTime = fEvtHeader->GetSecond();
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       aHist->second->Write();
+      fBgoPed->GlobalDynodeID.push_back(aHist->first);
 // *
 // *  TODO: fit and save output data 
 // *
+      float mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
+      for(short i = 0;i<3;++i){
+        gausFit->SetRange(mean-3*sigma,mean+3*sigma);
+        aHist->second->Fit(gausFit,"R");
+        mean = gausFit->GetParameter(1);
+        sigma = gausFit->GetParameter(2);
+      }
+      fBgoPed->Mean.push_back(mean);
+      fBgoPed->Sigma.push_back(sigma);
       delete aHist->second;
   }
   return true;
