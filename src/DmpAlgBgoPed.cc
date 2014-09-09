@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "TH1F.h"
+#include "TF1.h"
 
 #include "DmpEvtHeader.h"
 #include "DmpEvtBgoRaw.h"
@@ -15,7 +16,6 @@
 #include "DmpDataBuffer.h"
 #include "DmpParameterBgo.h"
 #include "DmpBgoBase.h"
-#include "TF1.h"
 
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
@@ -83,7 +83,6 @@ bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,1500);
   fBgoPed->StopTime = fEvtHeader->GetSecond();
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
-      aHist->second->Write();
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
 // *
 // *  TODO: fit and save output data 
@@ -97,6 +96,7 @@ bool DmpAlgBgoPed::Finalize(){
       }
       fBgoPed->Mean.push_back(mean);
       fBgoPed->Sigma.push_back(sigma);
+      aHist->second->Write();
       delete aHist->second;
   }
   return true;
