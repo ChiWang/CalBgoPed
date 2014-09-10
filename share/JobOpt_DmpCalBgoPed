@@ -19,7 +19,7 @@ DMPSW.Core.Set("EventNumber","3055")     # If NOT set, will use 1234567890
 #-------------------------------------------------------------------
 # RootIOSvc options
 DMPSW.RootIOSvc.Set("InData/Read","DmpRdcData.root")        # save output into input root file, if you really need
-DMPSW.RootIOSvc.Set("OutData/FileName","./DmpCalBgoPed.root")        # must set it, if NOT set, will not save anything
+#DMPSW.RootIOSvc.Set("OutData/FileName","./DmpCalBgoPed.root")        # must set it, if NOT set, will not save anything
 DMPSW.RootIOSvc.Set("OutData/WriteList","Calibration/Bgo/Pedestal")  # split by ;
 
 #-------------------------------------------------------------------

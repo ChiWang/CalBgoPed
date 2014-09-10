@@ -8,6 +8,7 @@
 
 #include "TH1F.h"
 #include "TF1.h"
+#include "TFile.h"
 
 #include "DmpEvtHeader.h"
 #include "DmpEvtBgoRaw.h"
@@ -32,6 +33,9 @@ DmpAlgBgoPed::~DmpAlgBgoPed(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Initialize(){
+  if("NOOUT"==gRootIOSvc->GetOutputFileName()){
+    gRootIOSvc->Set("OutData/FileName","./"+gRootIOSvc->GetInputFileName()+"_ped.root");
+  }
   // read input data
   fEvtHeader = new DmpEvtHeader();
   if(not gDataBuffer->ReadObject("Event/Rdc/EventHeader",fEvtHeader)){
@@ -57,8 +61,9 @@ bool DmpAlgBgoPed::Initialize(){
       for(short s=0;s<DmpParameterBgo::kSideNo;++s){
         for(short d=0;d<DmpParameterBgo::kDyNo;++d){
           char name[50];
-          snprintf(name,50,"BgoPed_L%02d_B%02d_Dy%02d",l,b,s*10+d*3+2);
-          fPedHist.insert(std::make_pair(DmpBgoBase::ConstructGlobalDynodeID(l,b,s,d*3+2),new TH1F(name,name,1000,-500,2500)));
+          short gid_dy = DmpBgoBase::ConstructGlobalDynodeID(l,b,s,d*3+2);
+          snprintf(name,50,"BgoPed_%05d-L%02d_B%02d_Dy%02d",gid_dy,l,b,s*10+d*3+2);
+          fPedHist.insert(std::make_pair(gid_dy,new TH1F(name,name,1000,-500,500)));
         }
       }
     }
@@ -81,6 +86,8 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,1500);
+  std::string histFileName = gRootIOSvc->GetInputFileName()+"_ped_Hist.root";
+  TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   fBgoPed->StopTime = fEvtHeader->GetSecond();
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
@@ -96,9 +103,13 @@ bool DmpAlgBgoPed::Finalize(){
       }
       fBgoPed->Mean.push_back(mean);
       fBgoPed->Sigma.push_back(sigma);
+      if((mean > 160 || mean<-160) && sigma >30){
+         DmpLogWarning<<"GID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
+      }
       aHist->second->Write();
       delete aHist->second;
   }
+  delete histFile;
   return true;
 }
 
