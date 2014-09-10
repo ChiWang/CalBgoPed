@@ -97,7 +97,7 @@ bool DmpAlgBgoPed::Finalize(){
       float mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-3*sigma,mean+3*sigma);
-        aHist->second->Fit(gausFit,"R");
+        aHist->second->Fit(gausFit,"RQ");
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
