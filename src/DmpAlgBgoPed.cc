@@ -33,9 +33,7 @@ DmpAlgBgoPed::~DmpAlgBgoPed(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Initialize(){
-  if("NOOUT"==gRootIOSvc->GetOutputFileName()){
-    gRootIOSvc->Set("OutData/FileName","./"+gRootIOSvc->GetInputFileName()+"_ped.root");
-  }
+  gRootIOSvc->Set("OutData/FileName","./"+gRootIOSvc->GetInputFileName()+"_ped.root");
   // read input data
   fEvtHeader = new DmpEvtHeader();
   if(not gDataBuffer->ReadObject("Event/Rdc/EventHeader",fEvtHeader)){
@@ -85,7 +83,7 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
-  TF1 *gausFit = new TF1("GausFit","gaus",-500,1500);
+  TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
   std::string histFileName = gRootIOSvc->GetInputFileName()+"_ped_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   fBgoPed->StopTime = fEvtHeader->GetSecond();
@@ -96,7 +94,7 @@ bool DmpAlgBgoPed::Finalize(){
 // *
       float mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
-        gausFit->SetRange(mean-3*sigma,mean+3*sigma);
+        gausFit->SetRange(mean-2*sigma,mean+2*sigma);
         aHist->second->Fit(gausFit,"RQ");
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
