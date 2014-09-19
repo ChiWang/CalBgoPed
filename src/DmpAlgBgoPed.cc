@@ -83,7 +83,7 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
-  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"-ped_Hist.root";
+  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetOutputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   fBgoPed->StopTime = fEvtHeader->fSecond;
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
