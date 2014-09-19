@@ -27,7 +27,7 @@ DmpAlgBgoPed::DmpAlgBgoPed()
   fBgoPed(0)
 {
   gRootIOSvc->Set("OutData/Key","ped");
-  gRootIOSvc->Set("OutData/FileName",gRootIOSvc->GetInputFileName());
+  //gRootIOSvc->Set("OutData/FileName",gRootIOSvc->GetInputFileName());
 }
 
 //-------------------------------------------------------------------
