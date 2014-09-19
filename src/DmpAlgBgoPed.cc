@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpAlgBgoPed.cc, 2014-09-01 14:52:22 DAMPE $
+ *  $Id: DmpAlgBgoPed.cc, 2014-09-19 11:30:13 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 19/07/2014
 */
@@ -17,6 +17,7 @@
 #include "DmpDataBuffer.h"
 #include "DmpParameterBgo.h"
 #include "DmpBgoBase.h"
+#include "DmpCore.h"
 
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
@@ -25,6 +26,8 @@ DmpAlgBgoPed::DmpAlgBgoPed()
   fBgoRaw(0),
   fBgoPed(0)
 {
+  gRootIOSvc->Set("OutData/Key","ped");
+  gRootIOSvc->Set("OutData/FileName",gRootIOSvc->GetInputFileName());
 }
 
 //-------------------------------------------------------------------
@@ -33,7 +36,6 @@ DmpAlgBgoPed::~DmpAlgBgoPed(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Initialize(){
-  gRootIOSvc->Set("OutData/FileName","./"+gRootIOSvc->GetInputFileName()+"_ped.root");
   // read input data
   fEvtHeader = new DmpEvtHeader();
   if(not gDataBuffer->ReadObject("Event/Rdc/EventHeader",fEvtHeader)){
@@ -49,8 +51,8 @@ bool DmpAlgBgoPed::Initialize(){
     return false;
   }
   fBgoPed->UsedFileName = gRootIOSvc->GetInputFileName();
-  gRootIOSvc->PrepareEvent(0);
-  fBgoPed->StartTime = fEvtHeader->GetSecond();
+  gRootIOSvc->PrepareEvent(gCore->GetCurrentEventID());
+  fBgoPed->StartTime = fEvtHeader->fSecond;
   // create Hist map
   short layerNo = DmpParameterBgo::kPlaneNo*2;
   short barNo = DmpParameterBgo::kBarNo+DmpParameterBgo::kRefBarNo;
@@ -71,12 +73,9 @@ bool DmpAlgBgoPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::ProcessThisEvent(){
-  short nSignal = fBgoRaw->GetSignalSize();
-  short gid = 0,adc = -999;
+  short nSignal = fBgoRaw->fADC.size();
   for(short i=0;i<nSignal;++i){
-    if(fBgoRaw->GetSignal(i,gid,adc)){
-      fPedHist[gid]->Fill(adc);
-    }
+    fPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
   }
   return true;
 }
@@ -84,9 +83,9 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
-  std::string histFileName = gRootIOSvc->GetInputFileName()+"_ped_Hist.root";
+  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"-ped_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
-  fBgoPed->StopTime = fEvtHeader->GetSecond();
+  fBgoPed->StopTime = fEvtHeader->fSecond;
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
 // *
