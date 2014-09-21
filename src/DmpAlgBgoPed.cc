@@ -1,5 +1,5 @@
 /*
- *  $Id: DmpAlgBgoPed.cc, 2014-09-19 11:30:13 DAMPE $
+ *  $Id: DmpAlgBgoPed.cc, 2014-09-21 15:34:23 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 19/07/2014
 */
@@ -26,7 +26,7 @@ DmpAlgBgoPed::DmpAlgBgoPed()
   fBgoRaw(0),
   fBgoPed(0)
 {
-  gRootIOSvc->Set("OutData/Key","ped");
+  gRootIOSvc->Set("Output/Key","ped");
 }
 
 //-------------------------------------------------------------------
@@ -87,9 +87,7 @@ bool DmpAlgBgoPed::Finalize(){
   fBgoPed->StopTime = fEvtHeader->fSecond;
   for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
-// *
-// *  TODO: fit and save output data 
-// *
+    // Fit and save output data
       float mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-2*sigma,mean+2*sigma);
