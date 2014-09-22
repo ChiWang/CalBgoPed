@@ -1,20 +1,22 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_DmpCalBgoPed, 2014-09-21 20:39:27 DAMPE $
+ *  $Id: JobOpt_BgoPed_fromHex, 2014-09-22 17:14:46 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
 #-------------------------------------------------------------------
-    NOTE:   input data is raw0(after rdc)
+    NOTE:   input data is scientific binary data
 '''
 
 #-------------------------------------------------------------------
+import os
 import DMPSW                    # Load DAMPE software
+import libDmpHex2Root as Hex2Root
 import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
+#DMPSW.Core.Set("EventNumber","4207")     # If NOT set, will use 1234567890
 #DMPSW.Core.Set("FromEvent","100")
-#DMPSW.Core.Set("EventNumber","4207")     # If NOT set
 #DMPSW.Core.Set("StartTime","20130101-0000")     # if NOT set, start from launch time
 #DMPSW.Core.Set("StopTime","20160101-0000")      # if NOT set, end at 2113.01.01
 #DMPSW.Core.Set("LogLevel","Warning")      # Value = {Error | Warning | Info | Debug}. If NOT set, will use Info.
@@ -23,13 +25,20 @@ import libDmpBgoPed as DmpBgoPed
 #-------------------------------------------------------------------
 # RootIOSvc options
 #DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/data/raw")
-DMPSW.RootIOSvc.Set("Input/FileName","DmpRdcData.root")
+DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/run/data/sci")
+DMPSW.RootIOSvc.Set("Input/FileName","A2_20140912_093933.frd")
 DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal")  # split by ;
+#DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal;Event/Rdc/EventHeader;Event/Rdc/Bgo")  # split by ;
 #DMPSW.RootIOSvc.Set("Output/Path",os.environ["DMPSWWORK"]+"/run/data/cal/ped")
+DMPSW.RootIOSvc.Set("Output/Path","./rxun")
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
+rdcAlgBT = Hex2Root.DmpAlgHex2Root()
 calBgoPed = DmpBgoPed.DmpAlgBgoPed()
+rdcAlgBT.Set("Bgo/Connector","Bgo/EQM")
+
+DMPSW.AlgMgr.Append(rdcAlgBT)
 DMPSW.AlgMgr.Append(calBgoPed)
 
 #-------------------------------------------------------------------
