@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include "TH1F.h"
+#include "TH1D.h"
 #include "TF1.h"
 #include "TFile.h"
 
@@ -62,7 +62,7 @@ bool DmpAlgBgoPed::Initialize(){
           char name[50];
           short gid_dy = DmpBgoBase::ConstructGlobalDynodeID(l,b,s,d*3+2);
           snprintf(name,50,"BgoPed_%05d-L%02d_B%02d_Dy%02d",gid_dy,l,b,s*10+d*3+2);
-          fPedHist.insert(std::make_pair(gid_dy,new TH1F(name,name,1000,-500,500)));
+          fPedHist.insert(std::make_pair(gid_dy,new TH1D(name,name,1000,-500,500)));
         }
       }
     }
@@ -85,10 +85,10 @@ bool DmpAlgBgoPed::Finalize(){
   std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetOutputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   fBgoPed->StopTime = fEvtHeader->fSecond;
-  for(std::map<short,TH1F*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
+  for(std::map<short,TH1D*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
     // Fit and save output data
-      float mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
+      double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-2*sigma,mean+2*sigma);
         aHist->second->Fit(gausFit,"RQ");
