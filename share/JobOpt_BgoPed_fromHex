@@ -8,7 +8,6 @@
 '''
 
 #-------------------------------------------------------------------
-import os
 import DMPSW                    # Load DAMPE software
 import libDmpHex2Root as Hex2Root
 import libDmpBgoPed as DmpBgoPed
@@ -24,19 +23,18 @@ import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # RootIOSvc options
-#DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/data/raw")
-DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/run/data/sci")
+DMPSW.RootIOSvc.Set("Input/Path",DMPSW.WorkPath+"/run/data/sci")
 DMPSW.RootIOSvc.Set("Input/FileName","A2_20140912_093933.frd")
 DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal")  # split by ;
 #DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal;Event/Rdc/EventHeader;Event/Rdc/Bgo")  # split by ;
-DMPSW.RootIOSvc.Set("Output/Path",os.environ["DMPSWWORK"]+"/run/data/cal/ped")
+DMPSW.RootIOSvc.Set("Output/Path",DMPSW.WorkPath+"/run/data/cal/ped")
 #DMPSW.RootIOSvc.Set("Output/Path","./rxun")
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
 rdcAlgBT = Hex2Root.DmpAlgHex2Root()
 calBgoPed = DmpBgoPed.DmpAlgBgoPed()
-rdcAlgBT.Set("Bgo/Connector","Bgo/EQM")
+rdcAlgBT.Set("Connector/Bgo","Bgo/EQM")
 
 DMPSW.AlgMgr.Append(rdcAlgBT)
 DMPSW.AlgMgr.Append(calBgoPed)
