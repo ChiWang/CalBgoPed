@@ -1,6 +1,6 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_BgoPed_fromRaw0, 2014-09-22 17:15:23 DAMPE $
+ *  $Id: JobOpt_BgoPed_fromRoot, 2014-10-13 12:24:29 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
 #-------------------------------------------------------------------
@@ -25,7 +25,7 @@ import libDmpBgoPed as DmpBgoPed
 # RootIOSvc options
 #DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/data/sci")
 DMPSW.RootIOSvc.Set("Input/FileName","DmpRdcData.root")
-DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal")  # split by ;
+DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo;Metadata/Bgo")  # split by ;
 #DMPSW.RootIOSvc.Set("Output/Path",os.environ["DMPSWWORK"]+"/run/data/cal/ped")
 
 #-------------------------------------------------------------------

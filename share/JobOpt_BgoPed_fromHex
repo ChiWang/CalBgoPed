@@ -1,6 +1,6 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_BgoPed_fromHex, 2014-09-22 17:14:46 DAMPE $
+ *  $Id: JobOpt_BgoPed_fromHex, 2014-10-13 12:15:26 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
 #-------------------------------------------------------------------
@@ -25,16 +25,15 @@ import libDmpBgoPed as DmpBgoPed
 # RootIOSvc options
 DMPSW.RootIOSvc.Set("Input/Path",DMPSW.WorkPath+"/run/data/sci")
 DMPSW.RootIOSvc.Set("Input/FileName","A2_20140912_093933.frd")
-DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal")  # split by ;
-#DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo/Pedestal;Event/Rdc/EventHeader;Event/Rdc/Bgo")  # split by ;
-DMPSW.RootIOSvc.Set("Output/Path",DMPSW.WorkPath+"/run/data/cal/ped")
+DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo;Metadata/Bgo")  # split by ;
+#DMPSW.RootIOSvc.Set("Output/Path",DMPSW.WorkPath+"/run/data/cal/ped")
 #DMPSW.RootIOSvc.Set("Output/Path","./rxun")
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
 rdcAlgBT = Hex2Root.DmpAlgHex2Root()
 calBgoPed = DmpBgoPed.DmpAlgBgoPed()
-rdcAlgBT.Set("Connector/Bgo","Bgo/EQM")
+rdcAlgBT.Set("Bgo/Connector",DMPSW.WorkPath+"/share/Connector/Bgo/EQM")
 
 DMPSW.AlgMgr.Append(rdcAlgBT)
 DMPSW.AlgMgr.Append(calBgoPed)

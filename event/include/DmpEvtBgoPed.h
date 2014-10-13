@@ -1,4 +1,4 @@
-/*   $Id: DmpEvtBgoPed.h, 2014-08-31 23:19:53 DAMPE $
+/*   $Id: DmpEvtBgoPed.h, 2014-10-13 11:36:41 DAMPE $
  *--------------------------------------------------------
  *  Author(s):
  *    Chi WANG  (chiwang@mail.ustc.edu.cn) 31/08/2014
@@ -16,22 +16,12 @@ class DmpEvtBgoPed : public TObject{
  */
 public:
   DmpEvtBgoPed();
-  DmpEvtBgoPed(const DmpEvtBgoPed &r);
-  DmpEvtBgoPed(const DmpEvtBgoPed *&r);
   ~DmpEvtBgoPed();
-
   void Reset();
-  //void SetUsedFileName(const std::string &n){fUsedFile = n;}
-  //void SetStartTime(const int &t){fStartTime = t;}
-  //void SetStopTime(const int &t){fStopTime = t;}
-  //void LoadTimeRange(int &b,int &e)const{b=fStartTime;e=fStopTime;}
-  //std::string UsedFile()const{return fUsedFile;}
+  DmpEvtBgoPed &operator=(const DmpEvtBgoPed &r);
+  void LoadFrom(DmpEvtBgoPed *r);
 
-//private:
 public:
-  std::string   UsedFileName;      // file name of raw data
-  int   StartTime;     // the time of the first event used to cal. ped
-  int   StopTime;      // 
   std::vector<short>    GlobalDynodeID;
   std::vector<double>   Mean;
   std::vector<double>   Sigma;

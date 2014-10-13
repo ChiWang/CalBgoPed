@@ -7,11 +7,13 @@
 #ifndef DmpAlgBgoPed_H
 #define DmpAlgBgoPed_H
 
+#include <map>
 #include "DmpVAlg.h"
 
 class DmpEvtHeader;
 class DmpEvtBgoRaw;
 class DmpEvtBgoPed;
+class DmpMetadata;
 class TH1D;
 
 class DmpAlgBgoPed : public DmpVAlg{
@@ -29,6 +31,7 @@ public:
   bool Finalize();
 
 private:
+  DmpMetadata           *fMetadata;
   DmpEvtHeader          *fEvtHeader;
   DmpEvtBgoRaw          *fBgoRaw;
   DmpEvtBgoPed          *fBgoPed;

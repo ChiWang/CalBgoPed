@@ -1,4 +1,4 @@
-/*   $Id: DmpEvtBgoPed.cc, 2014-08-31 23:23:25 DAMPE $
+/*   $Id: DmpEvtBgoPed.cc, 2014-10-13 11:36:42 DAMPE $
  *--------------------------------------------------------
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustd.edu.cn)
@@ -15,44 +15,27 @@ DmpEvtBgoPed::DmpEvtBgoPed(){
 }
 
 //-------------------------------------------------------------------
-DmpEvtBgoPed::DmpEvtBgoPed(const DmpEvtBgoPed &r){
+DmpEvtBgoPed& DmpEvtBgoPed::operator=(const DmpEvtBgoPed &r){
   Reset();
-  UsedFileName = r.UsedFileName;
-  StartTime = r.StartTime;
-  StopTime = r.StopTime;
-  short n = GlobalDynodeID.size();
-  for(size_t i = 0;i<n;++i){
-    GlobalDynodeID.push_back(r.GlobalDynodeID[i]);
-    Mean.push_back(r.Mean[i]);
-    Sigma.push_back(r.Sigma[i]);
-  }
+  GlobalDynodeID = r.GlobalDynodeID;
+  Mean = r.Mean;
+  Sigma = r.Sigma;
 }
 
 //-------------------------------------------------------------------
-DmpEvtBgoPed::DmpEvtBgoPed(const DmpEvtBgoPed *&r){
+void DmpEvtBgoPed::LoadFrom(DmpEvtBgoPed *r){
   Reset();
-  UsedFileName = r->UsedFileName;
-  StartTime = r->StartTime;
-  StopTime = r->StopTime;
-  short n = GlobalDynodeID.size();
-  for(size_t i = 0;i<n;++i){
-    GlobalDynodeID.push_back(r->GlobalDynodeID[i]);
-    Mean.push_back(r->Mean[i]);
-    Sigma.push_back(r->Sigma[i]);
-  }
+  GlobalDynodeID = r->GlobalDynodeID;
+  Mean = r->Mean;
+  Sigma = r->Sigma;
 }
 
 //-------------------------------------------------------------------
-DmpEvtBgoPed::~DmpEvtBgoPed()
-{
+DmpEvtBgoPed::~DmpEvtBgoPed(){
 }
 
 //-------------------------------------------------------------------
-void DmpEvtBgoPed::Reset()
-{
-  UsedFileName="NO";
-  StartTime = 0;
-  StopTime  =0xafffffff;
+void DmpEvtBgoPed::Reset(){
   GlobalDynodeID.clear();
   Mean.clear();
   Sigma.clear();
