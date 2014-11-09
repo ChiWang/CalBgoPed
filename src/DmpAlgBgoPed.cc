@@ -11,7 +11,6 @@
 #include "TF1.h"
 #include "TFile.h"
 
-#include "DmpMetadata.h"
 #include "DmpEvtHeader.h"
 #include "DmpEvtBgoRaw.h"
 #include "DmpEvtBgoPed.h"
@@ -24,14 +23,11 @@
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
  :DmpVAlg("Cal/Bgo/Ped"),
-  fMetadata(0),
   fEvtHeader(0),
   fBgoRaw(0),
   fBgoPed(0)
 {
-  fMetadata = new DmpMetadata();
-  gDataBuffer->RegisterObject("Metadata/Bgo/Pedestal",fMetadata,"DmpMetadata");
-  gRootIOSvc->Set("Output/Key","ped");
+  gRootIOSvc->SetOutputKey("ped");
 }
 
 //-------------------------------------------------------------------
@@ -54,9 +50,6 @@ bool DmpAlgBgoPed::Initialize(){
   // create output data holder
   fBgoPed = new DmpEvtBgoPed();
   gDataBuffer->RegisterObject("Calibration/Bgo/Pedestal",fBgoPed,"DmpEvtBgoPed");
-  gRootIOSvc->PrepareEvent(gCore->GetCurrentEventID());
-  fMetadata->SetOption("Parameter/FileName",gRootIOSvc->GetInputFileName());
-  fMetadata->SetOption("StartTime",boost::lexical_cast<std::string>(fEvtHeader->fSecond));
   // create Hist map
   short layerNo = DmpParameterBgo::kPlaneNo*2;
   short barNo = DmpParameterBgo::kBarNo+DmpParameterBgo::kRefBarNo;
@@ -77,8 +70,12 @@ bool DmpAlgBgoPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::ProcessThisEvent(){
-  for(std::map<short,double>::iterator it=fBgoRaw->fADC.begin();it!=fBgoRaw->fADC.end();++it){
-    fPedHist[it->first]->Fill(it->second);
+  if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
+    return false;
+  }
+  short nSignal = fBgoRaw->fGlobalDynodeID.size();
+  for(short i=0;i<nSignal;++i){
+    fPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
   }
   return true;
 }
@@ -88,7 +85,6 @@ bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
   std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetOutputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
-  fMetadata->SetOption("StopTime",boost::lexical_cast<std::string>(fEvtHeader->fSecond));
   for(std::map<short,TH1D*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
       fBgoPed->GlobalDynodeID.push_back(aHist->first);
     // Fit and save output data

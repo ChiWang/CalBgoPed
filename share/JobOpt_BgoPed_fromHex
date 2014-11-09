@@ -1,6 +1,6 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_BgoPed_fromHex, 2014-10-13 12:15:26 DAMPE $
+ *  $Id: JobOpt_BgoPed_fromHex, 2014-11-09 15:09:29 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
 #-------------------------------------------------------------------
@@ -8,33 +8,38 @@
 '''
 
 #-------------------------------------------------------------------
+import os
+import glob
 import DMPSW                    # Load DAMPE software
 import libDmpHex2Root as Hex2Root
 import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
-#DMPSW.Core.Set("EventNumber","4207")     # If NOT set, will use 1234567890
-#DMPSW.Core.Set("FromEvent","100")
-#DMPSW.Core.Set("StartTime","20130101-0000")     # if NOT set, start from launch time
-#DMPSW.Core.Set("StopTime","20160101-0000")      # if NOT set, end at 2113.01.01
-#DMPSW.Core.Set("LogLevel","Warning")      # Value = {Error | Warning | Info | Debug}. If NOT set, will use Info.
-#DMPSW.Core.Set("LogHeader","On")
+#DMPSW.Core.MaxEventNumber(4)     # default: -1
+#DMPSW.Core.StartTime("2013-01-01 00:00:00")     # default: 2013-01-01 00:00:00
+#DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
+#DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
+#DMPSW.Core.LogHeader("On") # default: off
 
+DBase=DMPSW.WorkPath+"/run/BT"
 #-------------------------------------------------------------------
 # RootIOSvc options
-DMPSW.RootIOSvc.Set("Input/Path",DMPSW.WorkPath+"/run/data/sci")
-DMPSW.RootIOSvc.Set("Input/FileName","A2_20140912_093933.frd")
-DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo;Metadata/Bgo")  # split by ;
-#DMPSW.RootIOSvc.Set("Output/Path",DMPSW.WorkPath+"/run/data/cal/ped")
-#DMPSW.RootIOSvc.Set("Output/Path","./rxun")
+DMPSW.RootIOSvc.InputPath(DBase+"/sci")
+newestData=max(glob.iglob(DBase+"/sci/*.frd"),key=os.path.getctime)
+DMPSW.RootIOSvc.InputFile(newestData)
+#DMPSW.RootIOSvc.OutputPath(DMPSW.WorkPath+"/run/data/cal/ped")
+DMPSW.RootIOSvc.WriteList("Calibration/Bgo")  # split by ;
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
 rdcAlgBT = Hex2Root.DmpAlgHex2Root()
 calBgoPed = DmpBgoPed.DmpAlgBgoPed()
-rdcAlgBT.Set("Bgo/Connector",DMPSW.WorkPath+"/share/Connector/Bgo/EQM")
+rdcAlgBT.SetConnector("Psd",DMPSW.WorkPath+"/share/Connector/Psd/EQM")
+rdcAlgBT.SetConnector("Bgo",DMPSW.WorkPath+"/share/Connector/Bgo/EQM")
 
+#-------------------------------------------------------------------
+# Append user's service or algorithm into Kernel
 DMPSW.AlgMgr.Append(rdcAlgBT)
 DMPSW.AlgMgr.Append(calBgoPed)
 
