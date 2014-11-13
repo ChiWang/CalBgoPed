@@ -13,7 +13,6 @@
 
 #include "DmpEvtHeader.h"
 #include "DmpEvtBgoRaw.h"
-#include "DmpEvtBgoPed.h"
 #include "DmpAlgBgoPed.h"
 #include "DmpDataBuffer.h"
 #include "DmpParameterBgo.h"
@@ -24,8 +23,7 @@
 DmpAlgBgoPed::DmpAlgBgoPed()
  :DmpVAlg("Cal/Bgo/Ped"),
   fEvtHeader(0),
-  fBgoRaw(0),
-  fBgoPed(0)
+  fBgoRaw(0)
 {
   gRootIOSvc->SetOutputKey("ped");
 }
@@ -47,9 +45,6 @@ bool DmpAlgBgoPed::Initialize(){
     fBgoRaw = new DmpEvtBgoRaw();
     gDataBuffer->LinkRootFile("Event/Rdc/Bgo",fBgoRaw);
   }
-  // create output data holder
-  fBgoPed = new DmpEvtBgoPed();
-  gDataBuffer->RegisterObject("Calibration/Bgo/Pedestal",fBgoPed,"DmpEvtBgoPed");
   // create Hist map
   short layerNo = DmpParameterBgo::kPlaneNo*2;
   short barNo = DmpParameterBgo::kBarNo+DmpParameterBgo::kRefBarNo;
@@ -85,8 +80,10 @@ bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
   std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetOutputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
+  // create output txtfile
+  std::string name = "BgoPed_"+gRootIOSvc->GetOutputStem()+".txt";
+  OutBgoPedData.open(name.c_str(),std::ios::out);
   for(std::map<short,TH1D*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
-      fBgoPed->GlobalDynodeID.push_back(aHist->first);
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
@@ -95,14 +92,18 @@ bool DmpAlgBgoPed::Finalize(){
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
-      fBgoPed->Mean.push_back(mean);
-      fBgoPed->Sigma.push_back(sigma);
+      OutBgoPedData<<aHist->first<<std::setw(10)<<mean<<std::setw(10)<<sigma<<std::endl;
       if((mean > 160 || mean<-160) && sigma >30){
-         DmpLogWarning<<"GID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
+         DmpLogError<<"GID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
       aHist->second->Write();
       delete aHist->second;
   }
+  OutBgoPedData.close();
+
+  name = "PsdPed_"+gRootIOSvc->GetOutputStem()+".txt";
+  OutPsdPedData.open(name.c_str(),std::ios::out);
+
   delete histFile;
   return true;
 }

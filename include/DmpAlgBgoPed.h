@@ -8,11 +8,11 @@
 #define DmpAlgBgoPed_H
 
 #include <map>
+#include <fstream>
 #include "DmpVAlg.h"
 
 class DmpEvtHeader;
 class DmpEvtBgoRaw;
-class DmpEvtBgoPed;
 class TH1D;
 
 class DmpAlgBgoPed : public DmpVAlg{
@@ -32,8 +32,9 @@ public:
 private:
   DmpEvtHeader          *fEvtHeader;
   DmpEvtBgoRaw          *fBgoRaw;
-  DmpEvtBgoPed          *fBgoPed;
   std::map<short,TH1D*>  fPedHist;          // key is global dynode ID
+  std::ofstream         OutBgoPedData;      //
+  std::ofstream         OutPsdPedData;      //
 
 };
 

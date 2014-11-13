@@ -14,19 +14,18 @@ import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
-#DMPSW.Core.Set("FromEvent","100")
-#DMPSW.Core.Set("EventNumber","4207")     # If NOT set
-#DMPSW.Core.Set("StartTime","20130101-0000")     # if NOT set, start from launch time
-#DMPSW.Core.Set("StopTime","20160101-0000")      # if NOT set, end at 2113.01.01
-#DMPSW.Core.Set("LogLevel","Warning")      # Value = {Error | Warning | Info | Debug}. If NOT set, will use Info.
-#DMPSW.Core.Set("LogHeader","On")
+#DMPSW.Core.MaxEventNumber(4)     # default: -1
+#DMPSW.Core.StartTime("2013-01-01 00:00:00")     # default: 2013-01-01 00:00:00
+#DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
+#DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
+#DMPSW.Core.LogHeader("On") # default: off
 
 #-------------------------------------------------------------------
 # RootIOSvc options
-#DMPSW.RootIOSvc.Set("Input/Path",os.environ["DMPSWWORK"]+"/data/sci")
-DMPSW.RootIOSvc.Set("Input/FileName","DmpRdcData.root")
-DMPSW.RootIOSvc.Set("Output/WriteList","Calibration/Bgo;Metadata/Bgo")  # split by ;
-#DMPSW.RootIOSvc.Set("Output/Path",os.environ["DMPSWWORK"]+"/run/data/cal/ped")
+#DMPSW.RootIOSvc.InputPath(os.environ["DMPSWWORK"]+"/data/sci")
+DMPSW.RootIOSvc.InputFile("./DmpRdcData.root")
+#DMPSW.RootIOSvc.WriteList("Calibration/Bgo")  # split by ;
+#DMPSW.RootIOSvc.OutputPath(os.environ["DMPSWWORK"]+"/run/data/cal/ped")
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
