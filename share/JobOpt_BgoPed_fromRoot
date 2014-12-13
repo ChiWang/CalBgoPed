@@ -24,6 +24,7 @@ import libDmpBgoPed as DmpBgoPed
 # RootIOSvc options
 #DMPSW.RootIOSvc.InputPath(os.environ["DMPSWWORK"]+"/data/sci")
 DMPSW.RootIOSvc.InputFile("./DmpRdcData.root")
+#DMPSW.RootIOSvc.OutputFile("./DmpCalBgoMip.root")
 #DMPSW.RootIOSvc.WriteList("Calibration/Bgo")  # split by ;
 #DMPSW.RootIOSvc.OutputPath(os.environ["DMPSWWORK"]+"/run/data/cal/ped")
 
