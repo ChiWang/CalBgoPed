@@ -18,12 +18,15 @@
 #include "DmpParameterBgo.h"
 #include "DmpBgoBase.h"
 #include "DmpCore.h"
+#include "DmpTimeConvertor.h"
 
 //-------------------------------------------------------------------
 DmpAlgBgoPed::DmpAlgBgoPed()
  :DmpVAlg("Cal/Bgo/Ped"),
   fEvtHeader(0),
-  fBgoRaw(0)
+  fBgoRaw(0),
+  fFirstEvtTime(-1),
+  fLastEvtTime(-1)
 {
   gRootIOSvc->SetOutputKey("ped");
 }
@@ -55,7 +58,7 @@ bool DmpAlgBgoPed::Initialize(){
           char name[50];
           short gid_dy = DmpBgoBase::ConstructGlobalDynodeID(l,b,s,d*3+2);
           snprintf(name,50,"BgoPed_%05d-L%02d_B%02d_Dy%02d",gid_dy,l,b,s*10+d*3+2);
-          fPedHist.insert(std::make_pair(gid_dy,new TH1D(name,name,1000,-500,500)));
+          fBgoPedHist.insert(std::make_pair(gid_dy,new TH1D(name,name,1000,-500,500)));
         }
       }
     }
@@ -65,12 +68,15 @@ bool DmpAlgBgoPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::ProcessThisEvent(){
+  if(gCore->GetCurrentEventID() == gCore->GetFirstEventID()){
+    fFirstEvtTime = fEvtHeader->GetSecond();
+  }
   if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
     return false;
   }
   short nSignal = fBgoRaw->fGlobalDynodeID.size();
   for(short i=0;i<nSignal;++i){
-    fPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
+    fBgoPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
   }
   return true;
 }
@@ -83,7 +89,11 @@ bool DmpAlgBgoPed::Finalize(){
   // create output txtfile
   std::string name = "BgoPed_"+gRootIOSvc->GetOutputStem()+".txt";
   OutBgoPedData.open(name.c_str(),std::ios::out);
-  for(std::map<short,TH1D*>::iterator aHist=fPedHist.begin();aHist!=fPedHist.end();++aHist){
+  fLastEvtTime = fEvtHeader->GetSecond();
+  OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
+  OutBgoPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<"\t"<<fFirstEvtTime<<std::endl;
+  OutBgoPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<"\t"<<fLastEvtTime<<std::endl;
+  for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
@@ -93,7 +103,7 @@ bool DmpAlgBgoPed::Finalize(){
         sigma = gausFit->GetParameter(2);
       }
       OutBgoPedData<<aHist->first<<std::setw(10)<<mean<<std::setw(10)<<sigma<<std::endl;
-      if((mean > 160 || mean<-160) && sigma >30){
+      if(sigma>30){
          DmpLogError<<"GID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
       aHist->second->Write();

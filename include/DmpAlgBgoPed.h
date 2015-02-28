@@ -32,9 +32,11 @@ public:
 private:
   DmpEvtHeader          *fEvtHeader;
   DmpEvtBgoRaw          *fBgoRaw;
-  std::map<short,TH1D*>  fPedHist;          // key is global dynode ID
+  std::map<short,TH1D*>  fBgoPedHist;       // key is global dynode ID
   std::ofstream         OutBgoPedData;      //
   std::ofstream         OutPsdPedData;      //
+  int                   fFirstEvtTime;      // unit second
+  int                   fLastEvtTime;       // unit second
 
 };
 

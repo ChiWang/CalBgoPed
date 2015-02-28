@@ -14,7 +14,7 @@ import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
-#DMPSW.Core.MaxEventNumber(4)     # default: -1
+DMPSW.Core.SetEventNumber(4)     # default: -1
 #DMPSW.Core.StartTime("2013-01-01 00:00:00")     # default: 2013-01-01 00:00:00
 #DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
 #DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
@@ -23,7 +23,7 @@ import libDmpBgoPed as DmpBgoPed
 #-------------------------------------------------------------------
 # RootIOSvc options
 #DMPSW.RootIOSvc.InputPath(os.environ["DMPSWWORK"]+"/data/sci")
-DMPSW.RootIOSvc.InputFile("./DmpRdcData.root")
+DMPSW.RootIOSvc.SetInputFile("./DmpRdcData.root")
 #DMPSW.RootIOSvc.OutputFile("./DmpCalBgoMip.root")
 #DMPSW.RootIOSvc.WriteList("Calibration/Bgo")  # split by ;
 #DMPSW.RootIOSvc.OutputPath(os.environ["DMPSWWORK"]+"/run/data/cal/ped")
