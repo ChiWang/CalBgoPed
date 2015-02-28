@@ -16,7 +16,7 @@ import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
-DMPSW.Core.SetEventNumber(4000)     # default: -1
+#DMPSW.Core.SetEventNumber(4000)     # default: -1
 #DMPSW.Core.StartTime("2013-01-01 00:00:00")     # default: 2013-01-01 00:00:00
 #DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
 #DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
@@ -30,8 +30,7 @@ DMPSW.Core.SetEventNumber(4000)     # default: -1
 DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141117_135210.frd")
 #DMPSW.RootIOSvc.InputFile(newestData)
 #DMPSW.RootIOSvc.OutputPath(DMPSW.WorkPath+"/run/data/cal/ped")
-#DMPSW.RootIOSvc.SetWriteList("Calibration/Bgo")  # split by ;
-DMPSW.RootIOSvc.SetWriteList("Event/Rdc")  # split by ;
+#DMPSW.RootIOSvc.SetWriteList("Event/Rdc")  # split by ;
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm

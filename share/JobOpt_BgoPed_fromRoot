@@ -14,7 +14,7 @@ import libDmpBgoPed as DmpBgoPed
 
 #-------------------------------------------------------------------
 # Global setting
-DMPSW.Core.SetEventNumber(4)     # default: -1
+#DMPSW.Core.SetEventNumber(4)     # default: -1
 #DMPSW.Core.StartTime("2013-01-01 00:00:00")     # default: 2013-01-01 00:00:00
 #DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
 #DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.

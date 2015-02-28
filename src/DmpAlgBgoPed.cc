@@ -68,7 +68,7 @@ bool DmpAlgBgoPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::ProcessThisEvent(){
-  if(gCore->GetCurrentEventID() == gCore->GetFirstEventID()){
+  if(fFirstEvtTime == -1){
     fFirstEvtTime = fEvtHeader->GetSecond();
   }
   if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
@@ -84,10 +84,10 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
-  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetOutputStem()+"_Hist.root";
+  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   // create output txtfile
-  std::string name = "BgoPed_"+gRootIOSvc->GetOutputStem()+".txt";
+  std::string name = "BgoPed_"+gRootIOSvc->GetInputStem()+".txt";
   OutBgoPedData.open(name.c_str(),std::ios::out);
   fLastEvtTime = fEvtHeader->GetSecond();
   OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
@@ -111,7 +111,7 @@ bool DmpAlgBgoPed::Finalize(){
   }
   OutBgoPedData.close();
 
-  name = "PsdPed_"+gRootIOSvc->GetOutputStem()+".txt";
+  name = "PsdPed_"+gRootIOSvc->GetInputStem()+".txt";
   OutPsdPedData.open(name.c_str(),std::ios::out);
 
   delete histFile;
