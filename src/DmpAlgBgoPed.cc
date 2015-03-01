@@ -105,7 +105,9 @@ bool DmpAlgBgoPed::Finalize(){
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
-      OutBgoPedData<<aHist->first<<std::setw(10)<<mean<<std::setw(10)<<sigma<<std::endl;
+      short l,b,s,d;
+      DmpBgoBase::LoadLBSDID(aHist->first,l,b,s,d);
+      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<std::endl;
       if(sigma>30){
          DmpLogError<<"GID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
