@@ -68,8 +68,8 @@ bool DmpAlgBgoPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgBgoPed::ProcessThisEvent(){
-  if(fFirstEvtTime == -1){
-    fFirstEvtTime = fEvtHeader->GetSecond();
+  if(fEvtHeader->GetSecond() < gCore->GetStartTime() || fEvtHeader->GetSecond() > gCore->GetStopTime()){
+    return false;
   }
   if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
     return false;
@@ -78,6 +78,10 @@ bool DmpAlgBgoPed::ProcessThisEvent(){
   for(short i=0;i<nSignal;++i){
     fBgoPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
   }
+  if(fFirstEvtTime == -1){
+    fFirstEvtTime = fEvtHeader->GetSecond();
+  }
+  fLastEvtTime = fEvtHeader->GetSecond();
   return true;
 }
 
@@ -89,7 +93,6 @@ bool DmpAlgBgoPed::Finalize(){
   // create output txtfile
   std::string name = "BgoPed_"+gRootIOSvc->GetInputStem()+".txt";
   OutBgoPedData.open(name.c_str(),std::ios::out);
-  fLastEvtTime = fEvtHeader->GetSecond();
   OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
   OutBgoPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<"\t"<<fFirstEvtTime<<std::endl;
   OutBgoPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<"\t"<<fLastEvtTime<<std::endl;
