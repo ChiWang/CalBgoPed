@@ -122,8 +122,8 @@ bool DmpAlgCalibrationPed::ProcessThisEvent(){
     fPsdPedHist[fPsdRaw->fGlobalDynodeID[i]]->Fill(fPsdRaw->fADC[i]);
   }
   // nud ped
-  for(short i=0;i<4;++i){
-    fNudPedHist[i]->Fill(fNudRaw->fADC[i]);
+  for(short i=0;i<fNudRaw->fADC.size();++i){
+    fNudPedHist[fNudRaw->fChannelID[i]]->Fill(fNudRaw->fADC[i]);
   }
 
   if(fFirstEvtTime == -1){
