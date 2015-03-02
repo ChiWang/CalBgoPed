@@ -90,12 +90,16 @@ bool DmpAlgBgoPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
   std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_Hist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
-  // create output txtfile
-  std::string name = "BgoPed_"+gRootIOSvc->GetInputStem()+".txt";
+  histFile->mkdir("Bgo");
+  histFile->mkdir("Psd");
+
+  // create output txtfile      BGO
+  histFile->cd("Bgo");
+  std::string name = "Bgo_"+gRootIOSvc->GetInputStem()+".ped";
   OutBgoPedData.open(name.c_str(),std::ios::out);
   OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutBgoPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<"\t"<<fFirstEvtTime<<std::endl;
-  OutBgoPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<"\t"<<fLastEvtTime<<std::endl;
+  OutBgoPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<std::endl;
+  OutBgoPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -116,7 +120,7 @@ bool DmpAlgBgoPed::Finalize(){
   }
   OutBgoPedData.close();
 
-  name = "PsdPed_"+gRootIOSvc->GetInputStem()+".txt";
+  name = "Psd_"+gRootIOSvc->GetInputStem()+".ped";
   OutPsdPedData.open(name.c_str(),std::ios::out);
 
   delete histFile;
