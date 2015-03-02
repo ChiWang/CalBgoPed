@@ -1,6 +1,6 @@
 #! /usr/bin/python
 '''
- *  $Id: JobOpt_BgoPed_fromRoot, 2014-10-13 12:24:29 DAMPE $
+ *  $Id: JobOpt_CalibrationPed_fromRoot, 2015-03-02 15:40:09 DAMPE $
  *  Author(s):
  *    Chi WANG (chiwang@mail.ustc.edu.cn) 11/03/2014
 #-------------------------------------------------------------------
@@ -10,7 +10,7 @@
 #-------------------------------------------------------------------
 import os
 import DMPSW                    # Load DAMPE software
-import libDmpBgoPed as DmpBgoPed
+import libDmpCalPed as DmpCalPed
 
 #-------------------------------------------------------------------
 # Global setting
@@ -30,8 +30,8 @@ DMPSW.RootIOSvc.SetInputFile("./DmpRdcData.root")
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
-calBgoPed = DmpBgoPed.DmpAlgBgoPed()
-DMPSW.AlgMgr.Append(calBgoPed)
+calPed = DmpCalPed.DmpAlgCalibrationPed()
+DMPSW.AlgMgr.Append(calPed)
 
 #-------------------------------------------------------------------
 # Run job

@@ -5,11 +5,11 @@
 */
 
 #include <boost/python.hpp>
-#include "DmpAlgBgoPed.h"
+#include "DmpAlgCalibrationPed.h"
 
-BOOST_PYTHON_MODULE(libDmpBgoPed){
+BOOST_PYTHON_MODULE(libDmpCalPed){
   using namespace boost::python;
 
-  class_<DmpAlgBgoPed,boost::noncopyable,bases<DmpVAlg> >("DmpAlgBgoPed",init<>());
+  class_<DmpAlgCalibrationPed,boost::noncopyable,bases<DmpVAlg> >("DmpAlgCalibrationPed",init<>());
 }
 

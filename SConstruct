@@ -7,7 +7,7 @@
 
 import os
 
-target='DmpBgoPed'
+target='DmpCalPed'
 
 print "---> compiling: %s\n" % target
 #--------------------------------------------------------------------

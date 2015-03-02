@@ -12,7 +12,7 @@ import os
 import glob
 import DMPSW                    # Load DAMPE software
 import libDmpHex2Root as Hex2Root
-import libDmpBgoPed as DmpBgoPed
+import libDmpCalPed as DmpCalPed
 
 #-------------------------------------------------------------------
 # Global setting
@@ -27,22 +27,22 @@ import libDmpBgoPed as DmpBgoPed
 # RootIOSvc options
 #DMPSW.RootIOSvc.InputPath(DBase+"/sci")
 #newestData=max(glob.iglob(DBase+"/sci/*.frd"),key=os.path.getctime)
-DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141117_135210.frd")
-#DMPSW.RootIOSvc.InputFile(newestData)
+#DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141117_135210.frd")
+DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141101_125310.frd")
 #DMPSW.RootIOSvc.OutputPath(DMPSW.WorkPath+"/run/data/cal/ped")
 #DMPSW.RootIOSvc.SetWriteList("Event/Rdc")  # split by ;
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
 rdcAlgBT = Hex2Root.DmpAlgHex2Root()
-calBgoPed = DmpBgoPed.DmpAlgBgoPed()
+calPed = DmpCalPed.DmpAlgCalibrationPed()
 rdcAlgBT.SetConnector("Psd",DMPSW.WorkPath+"/share/Connector/Psd/EQM")
 rdcAlgBT.SetConnector("Bgo",DMPSW.WorkPath+"/share/Connector/Bgo/EQM")
 
 #-------------------------------------------------------------------
 # Append user's service or algorithm into Kernel
 DMPSW.AlgMgr.Append(rdcAlgBT)
-DMPSW.AlgMgr.Append(calBgoPed)
+DMPSW.AlgMgr.Append(calPed)
 
 #-------------------------------------------------------------------
 # Run job
