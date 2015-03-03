@@ -136,7 +136,7 @@ bool DmpAlgCalibrationPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgCalibrationPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
-  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_Hist.root";
+  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_PedHist.root";
   TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
   histFile->mkdir("Bgo");
   histFile->mkdir("Psd");
