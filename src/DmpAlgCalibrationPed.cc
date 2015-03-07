@@ -25,7 +25,7 @@
 
 //-------------------------------------------------------------------
 DmpAlgCalibrationPed::DmpAlgCalibrationPed()
- :DmpVAlg("Cal/Bgo/Ped"),
+ :DmpVAlg("DmpAlgCalibrationPed"),
   fEvtHeader(0),
   fBgoRaw(0),
   fPsdRaw(0),
@@ -33,7 +33,7 @@ DmpAlgCalibrationPed::DmpAlgCalibrationPed()
   fFirstEvtTime(-1),
   fLastEvtTime(-1)
 {
-  gRootIOSvc->SetOutputKey("ped");
+  gRootIOSvc->SetOutFileKey("CalPed");
 }
 
 //-------------------------------------------------------------------
@@ -89,7 +89,6 @@ bool DmpAlgCalibrationPed::Initialize(){
           short gid_dy = DmpPsdBase::ConstructGlobalDynodeID(l,b,s,d*3+5);
           snprintf(name,50,"PsdPed_%05d-L%02d_S%02d_Dy%02d",gid_dy,l,b,s*10+d*3+5);
           fPsdPedHist.insert(std::make_pair(gid_dy,new TH1D(name,name,1000,0,1000)));
-  //std::cout<<"DEBUG: "<<__FILE__<<"("<<__LINE__<<")\t"<<name<<std::endl;
         }
       }
     }
@@ -105,9 +104,6 @@ bool DmpAlgCalibrationPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgCalibrationPed::ProcessThisEvent(){
-  if(fEvtHeader->GetSecond() < gCore->GetStartTime() || fEvtHeader->GetSecond() > gCore->GetStopTime()){
-    return false;
-  }
   if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
     return false;
   }
@@ -136,13 +132,11 @@ bool DmpAlgCalibrationPed::ProcessThisEvent(){
 //-------------------------------------------------------------------
 bool DmpAlgCalibrationPed::Finalize(){
   TF1 *gausFit = new TF1("GausFit","gaus",-500,500);
-  std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_PedHist.root";
-  TFile *histFile = new TFile(histFileName.c_str(),"RECREATE");
-  histFile->mkdir("Bgo");
-  histFile->mkdir("Psd");
-  histFile->mkdir("Nud");
+  //std::string histFileName = gRootIOSvc->GetOutputPath()+gRootIOSvc->GetInputStem()+"_PedHist.root";
+  TFile *histFile = gRootIOSvc->GetOutputRootFile();//new TFile(histFileName.c_str(),"RECREATE");
 
   // create output txtfile      BGO
+  histFile->mkdir("Bgo");
   histFile->cd("Bgo");
   std::string name = "Bgo_"+gRootIOSvc->GetInputStem()+".ped";
   OutBgoPedData.open(name.c_str(),std::ios::out);
@@ -170,6 +164,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   OutBgoPedData.close();
 
   // create output txtfile      PSD
+  histFile->mkdir("Psd");
   histFile->cd("Psd");
   name = "Psd_"+gRootIOSvc->GetInputStem()+".ped";
   OutPsdPedData.open(name.c_str(),std::ios::out);
@@ -197,6 +192,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   OutPsdPedData.close();
 
   // create output txtfile   Nud
+  histFile->mkdir("Nud");
   histFile->cd("Nud");
   name = "Nud_"+gRootIOSvc->GetInputStem()+".ped";
   OutNudPedData.open(name.c_str(),std::ios::out);
@@ -221,7 +217,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   }
   OutNudPedData.close();
 
-  delete histFile;
+  //delete histFile;
   return true;
 }
 

@@ -19,6 +19,7 @@ import libDmpCalPed as DmpCalPed
 #DMPSW.Core.SetStopTime("2014-11-17 13:39:30")      # default: 2053-01-01 00:00:00
 #DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
 #DMPSW.Core.LogHeader("On") # default: off
+DMPSW.Core.SetMode("EQM")
 
 #-------------------------------------------------------------------
 # RootIOSvc options
