@@ -12,7 +12,6 @@
 #include "DmpVAlg.h"
 #include "DmpEvtPsdRaw.h"
 
-class DmpEvtHeader;
 class DmpEvtBgoRaw;
 //class DmpEvtPsdRaw;
 class DmpEvtNudRaw;
@@ -33,13 +32,9 @@ public:
   bool Finalize();
 
 private:
-  DmpEvtHeader          *fEvtHeader;
   DmpEvtBgoRaw          *fBgoRaw;
   DmpEvtPsdRaw          *fPsdRaw;
   DmpEvtNudRaw          *fNudRaw;
-
-  int                   fFirstEvtTime;      // unit second
-  int                   fLastEvtTime;       // unit second
 
   std::map<short,TH1D*>  fBgoPedHist;       // key is global dynode ID
   std::ofstream         OutBgoPedData;      //

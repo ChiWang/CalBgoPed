@@ -21,7 +21,6 @@ import libDmpCalPed as DmpCalPed
 #DMPSW.Core.StopTime("2016-01-01 00:00:00")      # default: 2053-01-01 00:00:00
 #DMPSW.Core.LogLevel("Debug")      # Value = {Error | Warning | Info | Debug}. default: Info.
 #DMPSW.Core.LogHeader("On") # default: off
-DMPSW.Core.SetMode("EQM")
 
 #DBase=DMPSW.WorkPath+"/run/BT"
 #-------------------------------------------------------------------
@@ -31,11 +30,12 @@ DMPSW.Core.SetMode("EQM")
 DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141117_135210.frd")
 #DMPSW.RootIOSvc.SetInputFile("./A2Data00_20141101_125310.frd")
 #DMPSW.RootIOSvc.OutputPath(DMPSW.WorkPath+"/run/data/cal/ped")
-DMPSW.RootIOSvc.SetWriteList("Event/Rdc")  # split by ;
+#DMPSW.RootIOSvc.SetWriteList("Event/Rdc")  # split by ;
 
 #-------------------------------------------------------------------
 # Creat user's service or algorithm
 rdcAlgBT = Hex2Root.DmpAlgHex2Root()
+rdcAlgBT.SetMode("EQM")
 calPed = DmpCalPed.DmpAlgCalibrationPed()
 #rdcAlgBT.SetConnector("Psd",DMPSW.WorkPath+"/share/Connector/Psd/EQM")
 #rdcAlgBT.SetConnector("Bgo",DMPSW.WorkPath+"/share/Connector/Bgo/EQM")

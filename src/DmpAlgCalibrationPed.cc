@@ -11,7 +11,6 @@
 #include "TF1.h"
 #include "TFile.h"
 
-#include "DmpEvtHeader.h"
 #include "DmpEvtBgoRaw.h"
 #include "DmpEvtNudRaw.h"
 #include "DmpAlgCalibrationPed.h"
@@ -26,12 +25,9 @@
 //-------------------------------------------------------------------
 DmpAlgCalibrationPed::DmpAlgCalibrationPed()
  :DmpVAlg("DmpAlgCalibrationPed"),
-  fEvtHeader(0),
   fBgoRaw(0),
   fPsdRaw(0),
-  fNudRaw(0),
-  fFirstEvtTime(-1),
-  fLastEvtTime(-1)
+  fNudRaw(0)
 {
   gRootIOSvc->SetOutFileKey("CalPed");
 }
@@ -43,11 +39,6 @@ DmpAlgCalibrationPed::~DmpAlgCalibrationPed(){
 //-------------------------------------------------------------------
 bool DmpAlgCalibrationPed::Initialize(){
   // read input data
-  fEvtHeader = dynamic_cast<DmpEvtHeader*>(gDataBuffer->ReadObject("Event/Rdc/EventHeader"));
-  if(0 == fEvtHeader){
-    fEvtHeader = new DmpEvtHeader();
-    gDataBuffer->LinkRootFile("Event/Rdc/EventHeader",fEvtHeader);
-  }
   fBgoRaw = dynamic_cast<DmpEvtBgoRaw*>(gDataBuffer->ReadObject("Event/Rdc/Bgo"));
   if(0 == fBgoRaw){
     fBgoRaw = new DmpEvtBgoRaw();
@@ -104,7 +95,7 @@ bool DmpAlgCalibrationPed::Initialize(){
 
 //-------------------------------------------------------------------
 bool DmpAlgCalibrationPed::ProcessThisEvent(){
-  if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not fEvtHeader->EnabledPeriodTrigger()) || (not fEvtHeader->GeneratedPeriodTrigger())){
+  if((fBgoRaw->GetRunMode() != DmpERunMode::kOriginal) || (not gCore->GetEventHeader()->EnabledPeriodTrigger()) || (not gCore->GetEventHeader()->GeneratedPeriodTrigger())){
     return false;
   }
   // bgo ped
@@ -121,11 +112,6 @@ bool DmpAlgCalibrationPed::ProcessThisEvent(){
   for(short i=0;i<fNudRaw->fADC.size();++i){
     fNudPedHist[fNudRaw->fChannelID[i]]->Fill(fNudRaw->fADC[i]);
   }
-
-  if(fFirstEvtTime == -1){
-    fFirstEvtTime = fEvtHeader->GetSecond();
-  }
-  fLastEvtTime = fEvtHeader->GetSecond();
   return true;
 }
 
@@ -141,8 +127,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   std::string name = "Bgo_"+gRootIOSvc->GetInputStem()+".ped";
   OutBgoPedData.open(name.c_str(),std::ios::out);
   OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutBgoPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<std::endl;
-  OutBgoPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<std::endl;
+  OutBgoPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -169,8 +154,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   name = "Psd_"+gRootIOSvc->GetInputStem()+".ped";
   OutPsdPedData.open(name.c_str(),std::ios::out);
   OutPsdPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutPsdPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<std::endl;
-  OutPsdPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<std::endl;
+  OutPsdPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fPsdPedHist.begin();aHist!=fPsdPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -197,8 +181,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   name = "Nud_"+gRootIOSvc->GetInputStem()+".ped";
   OutNudPedData.open(name.c_str(),std::ios::out);
   OutNudPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutNudPedData<<DmpTimeConvertor::Second2Date(fFirstEvtTime)<<std::endl;
-  OutNudPedData<<DmpTimeConvertor::Second2Date(fLastEvtTime)<<std::endl;
+  OutNudPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fNudPedHist.begin();aHist!=fNudPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
