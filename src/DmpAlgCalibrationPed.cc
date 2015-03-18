@@ -17,6 +17,7 @@
 #include "DmpDataBuffer.h"
 #include "DmpParameterBgo.h"
 #include "DmpParameterPsd.h"
+#include "DmpLoadParameters.h"
 #include "DmpBgoBase.h"
 #include "DmpPsdBase.h"
 #include "DmpCore.h"
@@ -126,8 +127,9 @@ bool DmpAlgCalibrationPed::Finalize(){
   histFile->cd("Bgo");
   std::string name = "Bgo_"+gRootIOSvc->GetInputStem()+".ped";
   OutBgoPedData.open(name.c_str(),std::ios::out);
-  OutBgoPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutBgoPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
+  OutBgoPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
+  OutBgoPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutBgoPedData<<Mark_D<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -146,6 +148,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       aHist->second->Write();
       delete aHist->second;
   }
+  OutBgoPedData<<Mark_N<<std::endl;
   OutBgoPedData.close();
 
   // create output txtfile      PSD
@@ -153,8 +156,9 @@ bool DmpAlgCalibrationPed::Finalize(){
   histFile->cd("Psd");
   name = "Psd_"+gRootIOSvc->GetInputStem()+".ped";
   OutPsdPedData.open(name.c_str(),std::ios::out);
-  OutPsdPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutPsdPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
+  OutPsdPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
+  OutPsdPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutPsdPedData<<Mark_D<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fPsdPedHist.begin();aHist!=fPsdPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -173,6 +177,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       aHist->second->Write();
       delete aHist->second;
   }
+  OutPsdPedData<<Mark_N<<std::endl;
   OutPsdPedData.close();
 
   // create output txtfile   Nud
@@ -180,8 +185,9 @@ bool DmpAlgCalibrationPed::Finalize(){
   histFile->cd("Nud");
   name = "Nud_"+gRootIOSvc->GetInputStem()+".ped";
   OutNudPedData.open(name.c_str(),std::ios::out);
-  OutNudPedData<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutNudPedData<<gCore->GetTimeFirstOutput()<<"\n"<<gCore->GetTimeLastOutput()<<std::endl;
+  OutNudPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
+  OutNudPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutNudPedData<<Mark_D<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fNudPedHist.begin();aHist!=fNudPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
@@ -198,6 +204,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       aHist->second->Write();
       delete aHist->second;
   }
+  OutNudPedData<<Mark_N<<std::endl;
   OutNudPedData.close();
 
   //delete histFile;
