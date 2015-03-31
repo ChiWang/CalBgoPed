@@ -100,18 +100,16 @@ bool DmpAlgCalibrationPed::ProcessThisEvent(){
     return false;
   }
   // bgo ped
-  short nSignal = fBgoRaw->fGlobalDynodeID.size();
-  for(short i=0;i<nSignal;++i){
-    fBgoPedHist[fBgoRaw->fGlobalDynodeID[i]]->Fill(fBgoRaw->fADC[i]);
+  for(std::map<short,double>::iterator it=fBgoRaw->fADC.begin();it != fBgoRaw->fADC.end();++it){
+    fBgoPedHist[it->first]->Fill(it->second);
   }
   // Psd ped
-  nSignal = fPsdRaw->fGlobalDynodeID.size();
-  for(short i=0;i<nSignal;++i){
-    fPsdPedHist[fPsdRaw->fGlobalDynodeID[i]]->Fill(fPsdRaw->fADC[i]);
+  for(std::map<short,double>::iterator it=fPsdRaw->fADC.begin();it != fPsdRaw->fADC.end();++it){
+    fPsdPedHist[it->first]->Fill(it->second);
   }
   // nud ped
-  for(short i=0;i<fNudRaw->fADC.size();++i){
-    fNudPedHist[fNudRaw->fChannelID[i]]->Fill(fNudRaw->fADC[i]);
+  for(short i=0;i<4;++i){
+    fNudPedHist[i]->Fill(fNudRaw->fADC[i]);
   }
   return true;
 }
