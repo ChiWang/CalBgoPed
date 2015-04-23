@@ -140,7 +140,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       }
       short l,b,s,d;
       DmpBgoBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
+      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Bgo\t\tID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -169,7 +169,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       }
       short l,b,s,d;
       DmpPsdBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutPsdPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
+      OutPsdPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Psd\t\tGID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -196,7 +196,7 @@ bool DmpAlgCalibrationPed::Finalize(){
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
-      OutNudPedData<<aHist->first<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
+      OutNudPedData<<aHist->first<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Nud\t\tGID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
