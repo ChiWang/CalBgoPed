@@ -128,18 +128,19 @@ bool DmpAlgCalibrationPed::Finalize(){
   OutBgoPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
   OutBgoPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
   OutBgoPedData<<Mark_D<<std::endl;
+  int fitStat;
   for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
     // Fit and save output data
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-2*sigma,mean+2*sigma);
-        aHist->second->Fit(gausFit,"RQ");
+        fitStat = aHist->second->Fit(gausFit,"RQ");
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
       short l,b,s,d;
       DmpBgoBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<std::endl;
+      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Bgo\t\tID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -162,13 +163,13 @@ bool DmpAlgCalibrationPed::Finalize(){
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-2*sigma,mean+2*sigma);
-        aHist->second->Fit(gausFit,"RQ");
+        fitStat = aHist->second->Fit(gausFit,"RQ");
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
       short l,b,s,d;
       DmpPsdBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutPsdPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<std::endl;
+      OutPsdPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Psd\t\tGID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -191,11 +192,11 @@ bool DmpAlgCalibrationPed::Finalize(){
       double mean = aHist->second->GetMean(), sigma = aHist->second->GetRMS();
       for(short i = 0;i<3;++i){
         gausFit->SetRange(mean-2*sigma,mean+2*sigma);
-        aHist->second->Fit(gausFit,"RQ");
+        fitStat = aHist->second->Fit(gausFit,"RQ");
         mean = gausFit->GetParameter(1);
         sigma = gausFit->GetParameter(2);
       }
-      OutNudPedData<<aHist->first<<"\t"<<mean<<std::setw(10)<<sigma<<std::endl;
+      OutNudPedData<<aHist->first<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Nud\t\tGID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
