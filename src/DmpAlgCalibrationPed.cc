@@ -126,7 +126,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   std::string name = "Bgo_"+gRootIOSvc->GetInputStem()+".ped";
   OutBgoPedData.open(name.c_str(),std::ios::out);
   OutBgoPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutBgoPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutBgoPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<"\nDetector="<<DmpEDetectorID::kBgo<<"\nType="<<0<<std::endl;
   OutBgoPedData<<Mark_D<<std::endl;
   int fitStat;
   for(std::map<short,TH1D*>::iterator aHist=fBgoPedHist.begin();aHist!=fBgoPedHist.end();++aHist){
@@ -140,7 +140,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       }
       short l,b,s,d;
       DmpBgoBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutBgoPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
+      OutBgoPedData<<aHist->first<<"\t\t"<<mean<<"\t\t"<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Bgo\t\tID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -156,7 +156,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   name = "Psd_"+gRootIOSvc->GetInputStem()+".ped";
   OutPsdPedData.open(name.c_str(),std::ios::out);
   OutPsdPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutPsdPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutPsdPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<"\nDetector="<<DmpEDetectorID::kPsd<<"\nType="<<0<<std::endl;
   OutPsdPedData<<Mark_D<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fPsdPedHist.begin();aHist!=fPsdPedHist.end();++aHist){
     // Fit and save output data
@@ -169,7 +169,7 @@ bool DmpAlgCalibrationPed::Finalize(){
       }
       short l,b,s,d;
       DmpPsdBase::LoadLBSDID(aHist->first,l,b,s,d);
-      OutPsdPedData<<aHist->first<<"\t"<<l<<"\t"<<b<<"\t"<<s<<"\t"<<d<<"\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
+      OutPsdPedData<<aHist->first<<"\t\t"<<mean<<std::setw(10)<<sigma<<"\t\t"<<gausFit->GetChisquare()/ gausFit->GetNDF()<<"\t\t"<<aHist->second->GetEntries()<<"\t\t"<<fitStat<<std::endl;
       if(sigma>30){
          DmpLogError<<"Psd\t\tGID = "<<aHist->first<<"\tmean = "<<mean<<"\tsigma = "<<sigma<<DmpLogEndl;
       }
@@ -185,7 +185,7 @@ bool DmpAlgCalibrationPed::Finalize(){
   name = "Nud_"+gRootIOSvc->GetInputStem()+".ped";
   OutNudPedData.open(name.c_str(),std::ios::out);
   OutNudPedData<<Mark_S<<"\nFileName="<<gRootIOSvc->GetInputFileName()<<std::endl;
-  OutNudPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<std::endl;
+  OutNudPedData<<"StartTime="<<gCore->GetTimeFirstOutput()<<"\nStopTime="<<gCore->GetTimeLastOutput()<<"\nDetector="<<DmpEDetectorID::kNud<<"\nType="<<0<<std::endl;
   OutNudPedData<<Mark_D<<std::endl;
   for(std::map<short,TH1D*>::iterator aHist=fNudPedHist.begin();aHist!=fNudPedHist.end();++aHist){
     // Fit and save output data
