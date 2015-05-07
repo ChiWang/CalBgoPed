@@ -6,6 +6,7 @@
 *.ped
 *.error
 *.frd
+*.eps
 
 # Compiled Dynamic libraries
 *.os
